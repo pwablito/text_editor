@@ -2,33 +2,29 @@ package main
 
 import (
 	"log"
+	"os"
 	"time"
 
 	ui "github.com/gizak/termui/v3"
 	"github.com/gizak/termui/v3/widgets"
-	"golang.org/x/term"
 )
 
 func main() {
-	if term.IsTerminal(0) {
-		println("in a term")
-	} else {
-		println("not in a term")
+	if len(os.Args) != 2 {
+		log.Fatal("Missing filename argument")
 	}
-	width, height, err := term.GetSize(0)
-	if err != nil {
-		return
-	}
-	println("width:", width, "height:", height)
+	filename := os.Args[1]
+	buffer := ReadFileToBuffer(filename)
 
+	width, height := GetWidowDimensions()
 	if err := ui.Init(); err != nil {
 		log.Fatalf("failed to initialize termui: %v", err)
 	}
 	defer ui.Close()
 
 	p := widgets.NewParagraph()
-	p.Title = "Editor"
-	p.Text = "Welcome to the editor"
+	p.Title = filename
+	p.Text = buffer.Content
 	p.SetRect(0, 0, width, height)
 
 	ui.Render(p)
@@ -39,8 +35,10 @@ func main() {
 		select {
 		case e := <-uiEvents:
 			switch e.ID {
-			case "q", "<C-c>":
+			case "<C-w>":
 				return // (exit)
+			case "<C-s>":
+				WriteBufferToFile(filename, buffer)
 			}
 		case <-ticker:
 			// Handle event loop ticker
