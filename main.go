@@ -55,6 +55,8 @@ func main() {
 					rebuildUI = buffer.ArrowRight()
 				case "<Left>":
 					rebuildUI = buffer.ArrowLeft()
+				case "<Down>":
+					rebuildUI = buffer.ArrowDown()
 				case "<Space>":
 					buffer.Insert(rune(' '))
 					rebuildUI = true

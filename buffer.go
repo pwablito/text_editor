@@ -120,3 +120,38 @@ func (buffer *EditableBuffer) Delete() (rebuildUI bool) {
 	}
 	return
 }
+
+func (buffer EditableBuffer) positionInLine() int {
+	pos := buffer.CursorPosition
+	for buffer.Content[pos] != '\n' && pos != 0 {
+		pos--
+	}
+	return buffer.CursorPosition - pos
+}
+
+func (buffer *EditableBuffer) MoveToStartOfNextLine() (rebuildUI bool) {
+	rebuildUI = false
+	for buffer.CursorPosition != len(buffer.Content) && buffer.Content[buffer.CursorPosition] != '\n' {
+		buffer.CursorPosition++
+		rebuildUI = true
+	}
+	return
+}
+
+func (buffer *EditableBuffer) seekPosInLine(pos int) (rebuildUI bool) {
+	rebuildUI = false
+	numForward := 0
+	for numForward <= pos && len(buffer.Content) > numForward+buffer.CursorPosition && buffer.Content[buffer.CursorPosition+numForward+1] != '\n' {
+		numForward++
+		rebuildUI = true
+	}
+	return
+}
+
+func (buffer *EditableBuffer) ArrowDown() (rebuildUI bool) {
+	oldPosition := buffer.CursorPosition
+	pos := buffer.positionInLine()
+	buffer.MoveToStartOfNextLine()
+	buffer.seekPosInLine(pos)
+	return buffer.CursorPosition != oldPosition
+}
