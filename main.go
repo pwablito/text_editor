@@ -40,45 +40,45 @@ func main() {
 			case ui.ResizeEvent:
 				// Not handled yet
 			case ui.KeyboardEvent:
+				rebuildUI := false
 				switch e.ID {
 				case "<C-w>":
 					return
 				case "<C-s>":
 					WriteBufferToFile(filename, buffer)
 					break
+				case "<C-r>":
+					// Reload from file
+					buffer = ReadFileToBuffer(filename)
+					rebuildUI = true
 				case "<Right>":
-					if buffer.CursorPosition != len(buffer.Content) {
-						buffer.CursorPosition++
-						p.Text = buffer.GetTermUiCompatibleOutput()
-						ui.Render(p)
-					}
-					break
+					rebuildUI = buffer.ArrowRight()
 				case "<Left>":
-					if buffer.CursorPosition != 0 {
-						buffer.CursorPosition--
-						p.Text = buffer.GetTermUiCompatibleOutput()
-						ui.Render(p)
-					}
-					break
+					rebuildUI = buffer.ArrowLeft()
 				case "<Space>":
 					buffer.Insert(rune(' '))
-					p.Text = buffer.GetTermUiCompatibleOutput()
-					ui.Render(p)
+					rebuildUI = true
 				case "<Enter>":
 					buffer.Insert(rune('\n'))
-					p.Text = buffer.GetTermUiCompatibleOutput()
-					ui.Render(p)
+					rebuildUI = true
+				case "<Backspace>":
+					rebuildUI = buffer.Backspace()
+				case "<Delete>":
+					rebuildUI = buffer.Delete()
 				default:
 					if len(e.ID) == 1 {
 						buffer.Insert(rune(e.ID[0]))
-						p.Text = buffer.GetTermUiCompatibleOutput()
-						ui.Render(p)
+						rebuildUI = true
 					} else {
 						log.Printf("Unhandled input: %s", e.ID)
 					}
 				}
-			}
+				if rebuildUI {
 
+					p.Text = buffer.GetTermUiCompatibleOutput()
+					ui.Render(p)
+				}
+			}
 		case <-ticker:
 			// Handle event loop ticker
 		}

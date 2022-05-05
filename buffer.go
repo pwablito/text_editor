@@ -82,3 +82,40 @@ func (buffer EditableBuffer) contentAfter(position int) string {
 	}
 	return buffer.Content[position:]
 }
+
+func (buffer *EditableBuffer) ArrowRight() (rebuildUI bool) {
+	rebuildUI = false
+	if buffer.CursorPosition != len(buffer.Content) {
+		buffer.CursorPosition++
+		rebuildUI = true
+	}
+	return
+}
+
+func (buffer *EditableBuffer) ArrowLeft() (rebuildUI bool) {
+	rebuildUI = false
+	if buffer.CursorPosition != 0 {
+		buffer.CursorPosition--
+		rebuildUI = true
+	}
+	return
+}
+
+func (buffer *EditableBuffer) Backspace() (rebuildUI bool) {
+	rebuildUI = false
+	if buffer.CursorPosition != 0 {
+		buffer.Content = buffer.contentBefore(buffer.CursorPosition-1) + buffer.contentAfter(buffer.CursorPosition)
+		buffer.CursorPosition--
+		rebuildUI = true
+	}
+	return
+}
+
+func (buffer *EditableBuffer) Delete() (rebuildUI bool) {
+	rebuildUI = false
+	if buffer.CursorPosition != len(buffer.Content) {
+		buffer.Content = buffer.contentBefore(buffer.CursorPosition) + buffer.contentAfter(buffer.CursorPosition+1)
+		rebuildUI = true
+	}
+	return
+}
