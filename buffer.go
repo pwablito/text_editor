@@ -52,16 +52,17 @@ func (buffer *EditableBuffer) Insert(char rune) {
 }
 
 func (buffer EditableBuffer) GetTermUiCompatibleOutput() string {
+	cursor_rendered := buffer.contentBefore(buffer.CursorPosition) + "|" + buffer.contentAfter(buffer.CursorPosition)
 	output := ""
-	for _, char := range buffer.Content {
+	for _, char := range cursor_rendered {
 		switch char {
 		case '\t':
 			output += "    "
+			break
 		default:
 			output += string(char)
 		}
 	}
-	output = buffer.contentBefore(buffer.CursorPosition) + "|" + buffer.contentAfter(buffer.CursorPosition)
 	return output
 }
 
