@@ -9,10 +9,14 @@ import (
 	"github.com/gizak/termui/v3/widgets"
 )
 
+var logger *log.Logger
+
 func main() {
 	if len(os.Args) != 2 {
 		log.Fatal("Missing filename argument")
 	}
+	log_file, _ := os.Create(".text_editor.log") // TODO catch errors
+	logger = log.New(log_file, "", 0)
 	filename := os.Args[1]
 	buffer := ReadFileToBuffer(filename)
 
@@ -75,7 +79,7 @@ func main() {
 						buffer.Insert(rune(e.ID[0]))
 						rebuildUI = true
 					} else {
-						log.Printf("Unhandled input: %s", e.ID)
+						logger.Printf("Unhandled input: %s", e.ID)
 					}
 				}
 				if rebuildUI {

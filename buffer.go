@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"io/fs"
 	"io/ioutil"
-	"log"
 	"os"
 
 	"golang.org/x/sys/unix"
@@ -19,7 +18,7 @@ type EditableBuffer struct {
 func ReadFileToBuffer(filename string) *EditableBuffer {
 	content, err := ioutil.ReadFile(filename)
 	if err != nil {
-		log.Fatalf("Couldn't read file: %v", err)
+		logger.Fatalf("Couldn't read file: %v", err)
 	}
 
 	text := string(content)
@@ -41,7 +40,7 @@ func WriteBufferToFile(filename string, buffer *EditableBuffer) error {
 	}
 	err = os.WriteFile(filename, []byte(buffer.Content), permission)
 	if err != nil {
-		log.Fatalf("Couldn't write file: %v", err)
+		logger.Fatalf("Couldn't write file: %v", err)
 	}
 	return nil
 }
@@ -122,16 +121,20 @@ func (buffer *EditableBuffer) Delete() (rebuildUI bool) {
 }
 
 func (buffer EditableBuffer) positionInLine() int {
-	pos := buffer.CursorPosition
-	for buffer.Content[pos] != '\n' && pos != 0 {
-		pos--
+	offset := 0
+	for buffer.Content[buffer.CursorPosition-offset] != '\n' && offset != buffer.CursorPosition {
+		offset++
 	}
-	return buffer.CursorPosition - pos
+	return offset
 }
 
 func (buffer *EditableBuffer) MoveToStartOfNextLine() (rebuildUI bool) {
 	rebuildUI = false
 	for buffer.CursorPosition != len(buffer.Content) && buffer.Content[buffer.CursorPosition] != '\n' {
+		buffer.CursorPosition++
+		rebuildUI = true
+	}
+	if buffer.CursorPosition < len(buffer.Content) {
 		buffer.CursorPosition++
 		rebuildUI = true
 	}
@@ -145,6 +148,7 @@ func (buffer *EditableBuffer) seekPosInLine(pos int) (rebuildUI bool) {
 		numForward++
 		rebuildUI = true
 	}
+	buffer.CursorPosition += numForward
 	return
 }
 
