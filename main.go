@@ -24,7 +24,7 @@ func main() {
 
 	p := widgets.NewParagraph()
 	p.Title = filename
-	p.Text = buffer.Content
+	p.Text = buffer.GetTermUiCompatibleOutput()
 	p.SetRect(0, 0, width, height)
 
 	ui.Render(p)

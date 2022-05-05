@@ -31,3 +31,16 @@ func WriteBufferToFile(filename string, buffer EditableBuffer) {
 		log.Fatalf("Couldn't write file: %v", err)
 	}
 }
+
+func (buffer EditableBuffer) GetTermUiCompatibleOutput() string {
+	output := ""
+	for _, char := range buffer.Content {
+		switch char {
+		case '\t':
+			output += "    "
+		default:
+			output += string(char)
+		}
+	}
+	return output
+}
