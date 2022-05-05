@@ -45,8 +45,27 @@ func main() {
 					return
 				case "<C-s>":
 					WriteBufferToFile(filename, buffer)
+					break
 				case "<Right>":
-					buffer.CursorPosition++
+					if buffer.CursorPosition != len(buffer.Content) {
+						buffer.CursorPosition++
+						p.Text = buffer.GetTermUiCompatibleOutput()
+						ui.Render(p)
+					}
+					break
+				case "<Left>":
+					if buffer.CursorPosition != 0 {
+						buffer.CursorPosition--
+						p.Text = buffer.GetTermUiCompatibleOutput()
+						ui.Render(p)
+					}
+					break
+				case "<Space>":
+					buffer.Insert(rune(' '))
+					p.Text = buffer.GetTermUiCompatibleOutput()
+					ui.Render(p)
+				case "<Enter>":
+					buffer.Insert(rune('\n'))
 					p.Text = buffer.GetTermUiCompatibleOutput()
 					ui.Render(p)
 				default:
