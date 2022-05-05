@@ -34,12 +34,32 @@ func main() {
 	for {
 		select {
 		case e := <-uiEvents:
-			switch e.ID {
-			case "<C-w>":
-				return // (exit)
-			case "<C-s>":
-				WriteBufferToFile(filename, buffer)
+			switch e.Type {
+			case ui.MouseEvent:
+				// Not handled yet
+			case ui.ResizeEvent:
+				// Not handled yet
+			case ui.KeyboardEvent:
+				switch e.ID {
+				case "<C-w>":
+					return
+				case "<C-s>":
+					WriteBufferToFile(filename, buffer)
+				case "<Right>":
+					buffer.CursorPosition++
+					p.Text = buffer.GetTermUiCompatibleOutput()
+					ui.Render(p)
+				default:
+					if len(e.ID) == 1 {
+						buffer.Insert(rune(e.ID[0]))
+						p.Text = buffer.GetTermUiCompatibleOutput()
+						ui.Render(p)
+					} else {
+						log.Printf("Unhandled input: %s", e.ID)
+					}
+				}
 			}
+
 		case <-ticker:
 			// Handle event loop ticker
 		}
