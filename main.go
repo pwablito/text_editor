@@ -61,6 +61,9 @@ func main() {
 				case "<Enter>":
 					buffer.Insert(rune('\n'))
 					rebuildUI = true
+				case "<Tab>":
+					buffer.Insert(rune('\t'))
+					rebuildUI = true
 				case "<Backspace>":
 					rebuildUI = buffer.Backspace()
 				case "<Delete>":
@@ -74,7 +77,6 @@ func main() {
 					}
 				}
 				if rebuildUI {
-
 					p.Text = buffer.GetTermUiCompatibleOutput()
 					ui.Render(p)
 				}
