@@ -20,7 +20,6 @@ func main() {
 	filename := os.Args[1]
 	buffer := ReadFileToBuffer(filename)
 
-	width, height := GetWidowDimensions()
 	if err := ui.Init(); err != nil {
 		log.Fatalf("failed to initialize termui: %v", err)
 	}
@@ -29,22 +28,24 @@ func main() {
 	p := widgets.NewParagraph()
 	p.Title = filename
 	p.Text = buffer.GetTermUiCompatibleOutput()
-	p.SetRect(0, 0, width, height)
+
+	setWindowSize(p)
 
 	ui.Render(p)
 
 	uiEvents := ui.PollEvents()
 	ticker := time.NewTicker(time.Second).C
 	for {
+		rebuildUI := false
 		select {
 		case e := <-uiEvents:
 			switch e.Type {
 			case ui.MouseEvent:
 				// Not handled yet
 			case ui.ResizeEvent:
-				// Not handled yet
+				setWindowSize(p)
+				ui.Render(p)
 			case ui.KeyboardEvent:
-				rebuildUI := false
 				switch e.ID {
 				case "<C-w>":
 					return
@@ -82,13 +83,13 @@ func main() {
 						logger.Printf("Unhandled input: %s", e.ID)
 					}
 				}
-				if rebuildUI {
-					p.Text = buffer.GetTermUiCompatibleOutput()
-					ui.Render(p)
-				}
 			}
 		case <-ticker:
 			// Handle event loop ticker
+		}
+		if rebuildUI {
+			p.Text = buffer.GetTermUiCompatibleOutput()
+			ui.Render(p)
 		}
 	}
 }
