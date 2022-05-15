@@ -44,7 +44,7 @@ func main() {
 				// Not handled yet
 			case ui.ResizeEvent:
 				setWindowSize(p)
-				ui.Render(p)
+				rebuildUI = true
 			case ui.KeyboardEvent:
 				switch e.ID {
 				case "<C-w>":
