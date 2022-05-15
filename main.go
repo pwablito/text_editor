@@ -41,7 +41,8 @@ func main() {
 		case e := <-uiEvents:
 			switch e.Type {
 			case ui.MouseEvent:
-				// Not handled yet
+				logger.Printf("Unhandled mouse input: %s", e.ID)
+				logger.Print("Mouse inputs have not yet been implemented")
 			case ui.ResizeEvent:
 				setWindowSize(p)
 				rebuildUI = true
