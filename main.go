@@ -41,28 +41,46 @@ func main() {
 		case e := <-uiEvents:
 			switch e.Type {
 			case ui.MouseEvent:
-				logger.Printf("Unhandled mouse input: %s", e.ID)
 				logger.Print("Mouse inputs have not yet been implemented")
+				switch e.ID {
+				case "<MouseRelease>":
+					logger.Print("Mouse release not implemented")
+					break
+				case "<MouseLeft>":
+					logger.Print("Mouse left not implemented")
+					break
+				case "<MouseRight>":
+					logger.Print("Mouse right not implemented")
+					break
+				default:
+					logger.Printf("Unhandled mouse input: %s", e.ID)
+				}
 			case ui.ResizeEvent:
 				setWindowSize(p)
 				rebuildUI = true
 			case ui.KeyboardEvent:
 				switch e.ID {
 				case "<C-w>":
+					// Exit the program
 					return
 				case "<C-s>":
+					// Save the buffer
 					WriteBufferToFile(filename, buffer)
 					break
 				case "<C-r>":
 					// Reload from file
 					buffer = ReadFileToBuffer(filename)
 					rebuildUI = true
+				case "<C-<Space>>":
+					// Enter command mode
 				case "<Right>":
 					rebuildUI = buffer.ArrowRight()
 				case "<Left>":
 					rebuildUI = buffer.ArrowLeft()
 				case "<Down>":
 					rebuildUI = buffer.ArrowDown()
+				case "<Up>":
+					rebuildUI = buffer.ArrowUp()
 				case "<Space>":
 					buffer.Insert(rune(' '))
 					rebuildUI = true

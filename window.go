@@ -8,7 +8,7 @@ import (
 )
 
 func GetWidowDimensions() (int, int) {
-	width, height, err := term.GetSize(0)
+	width, height, err := term.GetSize(1)
 	if err != nil {
 		log.Fatal("couldn't get terminal size")
 	}

@@ -152,10 +152,44 @@ func (buffer *EditableBuffer) seekPosInLine(pos int) (rebuildUI bool) {
 	return
 }
 
-func (buffer *EditableBuffer) ArrowDown() (rebuildUI bool) {
+func SplitTextToLines(text string) []string {
+	lines := make([]string, 0)
+	current_line := ""
+	for _, character := range text {
+		if character == '\n' {
+			lines = append(lines, current_line)
+			current_line = ""
+		} else {
+			current_line += string(character)
+		}
+	}
+	lines = append(lines, current_line)
+	return lines
+}
+
+func (buffer EditableBuffer) CursorLineNumber() int {
+	return len(SplitTextToLines(buffer.contentBefore(buffer.CursorPosition))) - 1
+}
+func (buffer EditableBuffer) CursorPositionInLine() int {
+	lines := SplitTextToLines(buffer.contentBefore(buffer.CursorPosition))
+	return len(lines[len(lines)-1])
+}
+
+func (buffer *EditableBuffer) ArrowDown() bool {
 	oldPosition := buffer.CursorPosition
 	pos := buffer.positionInLine()
 	buffer.MoveToStartOfNextLine()
 	buffer.seekPosInLine(pos)
 	return buffer.CursorPosition != oldPosition
+}
+
+func (buffer *EditableBuffer) ArrowUp() bool {
+	oldCursorPosition := buffer.CursorPosition
+	cursorLineNumber := buffer.CursorLineNumber()
+	if cursorLineNumber == 0 {
+		buffer.CursorPosition = 0
+	} else {
+		logger.Print("Only know how to do up arrow when already at the top line")
+	}
+	return buffer.CursorPosition != oldCursorPosition
 }
