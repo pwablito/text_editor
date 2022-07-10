@@ -1,4 +1,4 @@
-package main
+package window
 
 import (
 	"log"
@@ -6,6 +6,8 @@ import (
 	"github.com/gizak/termui/v3/widgets"
 	"golang.org/x/term"
 )
+
+var Logger *log.Logger
 
 func GetWidowDimensions() (int, int) {
 	width, height, err := term.GetSize(1)
@@ -15,7 +17,7 @@ func GetWidowDimensions() (int, int) {
 	return width, height
 }
 
-func setWindowSize(p *widgets.Paragraph) {
+func SetWindowSize(p *widgets.Paragraph) {
 	width, height := GetWidowDimensions()
 	p.SetRect(0, 0, width, height)
 }

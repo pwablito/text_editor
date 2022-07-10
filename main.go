@@ -3,6 +3,8 @@ package main
 import (
 	"log"
 	"os"
+	buf_pkg "text_editor/src/buffer"
+	"text_editor/src/window"
 	"time"
 
 	ui "github.com/gizak/termui/v3"
@@ -17,8 +19,10 @@ func main() {
 	}
 	log_file, _ := os.Create(".text_editor.log") // TODO catch errors
 	logger = log.New(log_file, "", 0)
+	buf_pkg.Logger = logger
+	window.Logger = logger
 	filename := os.Args[1]
-	buffer := ReadFileToBuffer(filename)
+	buffer := buf_pkg.ReadFileToBuffer(filename)
 
 	if err := ui.Init(); err != nil {
 		log.Fatalf("failed to initialize termui: %v", err)
@@ -29,7 +33,7 @@ func main() {
 	p.Title = filename
 	p.Text = buffer.GetTermUiCompatibleOutput()
 
-	setWindowSize(p)
+	window.SetWindowSize(p)
 
 	ui.Render(p)
 
@@ -56,7 +60,7 @@ func main() {
 					logger.Printf("Unhandled mouse input: %s", e.ID)
 				}
 			case ui.ResizeEvent:
-				setWindowSize(p)
+				window.SetWindowSize(p)
 				rebuildUI = true
 			case ui.KeyboardEvent:
 				switch e.ID {
@@ -65,11 +69,11 @@ func main() {
 					return
 				case "<C-s>":
 					// Save the buffer
-					WriteBufferToFile(filename, buffer)
+					buf_pkg.WriteBufferToFile(filename, buffer)
 					break
 				case "<C-r>":
 					// Reload from file
-					buffer = ReadFileToBuffer(filename)
+					buffer = buf_pkg.ReadFileToBuffer(filename)
 					rebuildUI = true
 				case "<C-<Space>>":
 					// Enter command mode

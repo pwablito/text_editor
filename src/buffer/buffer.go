@@ -1,14 +1,17 @@
-package main
+package buffer
 
 import (
 	"errors"
 	"fmt"
 	"io/fs"
 	"io/ioutil"
+	"log"
 	"os"
 
 	"golang.org/x/sys/unix"
 )
+
+var Logger *log.Logger
 
 type EditableBuffer struct {
 	Content        string
@@ -18,7 +21,7 @@ type EditableBuffer struct {
 func ReadFileToBuffer(filename string) *EditableBuffer {
 	content, err := ioutil.ReadFile(filename)
 	if err != nil {
-		logger.Fatalf("Couldn't read file: %v", err)
+		Logger.Fatalf("Couldn't read file: %v", err)
 	}
 
 	text := string(content)
@@ -40,7 +43,7 @@ func WriteBufferToFile(filename string, buffer *EditableBuffer) error {
 	}
 	err = os.WriteFile(filename, []byte(buffer.Content), permission)
 	if err != nil {
-		logger.Fatalf("Couldn't write file: %v", err)
+		Logger.Fatalf("Couldn't write file: %v", err)
 	}
 	return nil
 }
@@ -189,7 +192,7 @@ func (buffer *EditableBuffer) ArrowUp() bool {
 	if cursorLineNumber == 0 {
 		buffer.CursorPosition = 0
 	} else {
-		logger.Print("Only know how to do up arrow when already at the top line")
+		Logger.Print("Only know how to do up arrow when already at the top line")
 	}
 	return buffer.CursorPosition != oldCursorPosition
 }
