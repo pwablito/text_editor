@@ -54,7 +54,11 @@ func (buffer *EditableBuffer) Insert(char rune) {
 }
 
 func (buffer EditableBuffer) GetTermUiCompatibleOutput() string {
-	cursor_rendered := buffer.contentBefore(buffer.CursorPosition) + "|" + buffer.contentAfter(buffer.CursorPosition)
+	cursor_rendered := buffer.contentBefore(buffer.CursorPosition) + "▓"
+	// TODO switch to measuring what remains in the line rather than the whole file
+	if len(buffer.contentAfter(buffer.CursorPosition)) > 1 {
+		cursor_rendered += buffer.contentAfter(buffer.CursorPosition)[1:]
+	}
 	output := ""
 	for _, char := range cursor_rendered {
 		switch char {
